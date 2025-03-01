@@ -16,7 +16,7 @@
     <div class="parchment-container">
         <div class="parchment-header">
             <img src="{{ url_for('static', filename='images/henhealth.png') }}" alt="Here Ye Health" class="small-logo">
-            <h1 class="medieval-title">Royal Consultation</h1>
+            <h1 class="medieval-title">Royal Physician Consultation</h1>
         </div>
         
         <!-- Accessibility controls -->
@@ -82,7 +82,7 @@
             <input type="text" id="user-message" class="message-input" 
                    placeholder="Write thy message here..." 
                    aria-label="Your message to the Royal Physician">
-            <button id="send-message" class="medieval-button">Send</button>
+            <button id="send-message" class="medieval-button">Send Scroll</button>
         </div>
         
         <!-- Alternative response options for low literacy -->
@@ -152,9 +152,27 @@
                     alert('This would read: ' + message.text);
                 };
                 messageDiv.appendChild(ttsButton);
-            } else {
+            } else if (message.speaker === 'user') {
                 messageDiv.className = 'message user';
                 messageDiv.innerHTML = `<strong class="peasant-text">Patient:</strong> ${message.text}`;
+            } else if (message.type === 'call_status') {
+                messageDiv.className = 'message status';
+                
+                if (message.status === 'completed') {
+                    messageDiv.innerHTML = `<span class="royal-text">The Royal Physician has completed thy consultation. A royal scroll has been prepared.</span>`;
+                    
+                    // Add link to medical record
+                    if (message.medical_record_url) {
+                        const recordLink = document.createElement('a');
+                        recordLink.href = message.medical_record_url;
+                        recordLink.className = 'medieval-button';
+                        recordLink.textContent = 'View Thy Medical Scroll';
+                        recordLink.style.display = 'block';
+                        recordLink.style.margin = '10px auto';
+                        recordLink.style.textAlign = 'center';
+                        messageDiv.appendChild(recordLink);
+                    }
+                }
             }
             
             conversation.appendChild(messageDiv);
@@ -163,7 +181,10 @@
             // Check for completion message
             if (message.type === 'call_status' && message.status === 'completed') {
                 if (message.medical_record_url) {
-                    window.location.href = message.medical_record_url;
+                    // Add a delay before redirecting to allow user to read message
+                    setTimeout(function() {
+                        window.location.href = message.medical_record_url;
+                    }, 5000); // 5 second delay
                 }
             }
         };
@@ -171,6 +192,12 @@
         eventSource.onerror = function(error) {
             console.error('EventSource failed:', error);
             eventSource.close();
+            
+            // Add error message to conversation
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'message status';
+            errorDiv.innerHTML = '<span class="royal-text">The royal messenger has lost connection to the physician. Please try again later.</span>';
+            conversation.appendChild(errorDiv);
         };
         
         // Send message function
@@ -197,6 +224,12 @@
             .catch(error => {
                 console.error('Error:', error);
                 hideLoadingScreen();
+                
+                // Add error message to conversation
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'message status';
+                errorDiv.innerHTML = '<span class="royal-text">Alas! The royal messenger could not deliver thy message. Please try again.</span>';
+                conversation.appendChild(errorDiv);
             });
         }
         
