@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Medical Scroll - Here Ye Health</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="medieval-theme">
+    <!-- Back Button -->
+    <button id="back-button" class="medieval-back-button">Return to Castle</button>
+    
+    <div class="royal-scroll-container">
+        <div class="scroll-header">
+            <img src="{{ url_for('static', filename='images/henhealth.png') }}" alt="Here Ye Health" class="small-logo">
+            <h1 id="medical-record-title" class="medieval-title">Royal Medical Scroll</h1>
+        </div>
+        
+        <!-- Patient Information -->
+        <div class="patient-scroll">
+            <h2 id="patient-info-heading" class="medieval-subtitle">Patient Details</h2>
+            <table class="medieval-table">
+                <tr>
+                    <td><strong id="first-name-label">Given Name</strong></td>
+                    <td id="first-name" class="parchment-data">{{ record.fname }}</td>
+                    <td><strong id="last-name-label">Family Name</strong></td>
+                    <td id="last-name" class="parchment-data">{{ record.lname }}</td>
+                </tr>
+                <tr>
+                    <td><strong id="age-label">Years of Life</strong></td>
+                    <td id="age" class="parchment-data">{{ record.age }}</td>
+                    <td><strong id="gender-label">Gender</strong></td>
+                    <td id="gender" class="parchment-data">{{ record.gender }}</td>
+                </tr>
+                <tr>
+                    <td><strong id="height-label">Height (cm)</strong></td>
+                    <td id="height" class="parchment-data">{{ record.height }}</td>
+                    <td><strong id="weight-label">Weight (kg)</strong></td>
+                    <td id="weight" class="parchment-data">{{ record.weight }}</td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Chronological Medical Records Summary -->
+        <div class="record-scroll">
+            <h2 id="record-summary-heading" class="medieval-subtitle">Chronicle of Royal Consultations</h2>
+            <table id="record-table" class="medieval-table record-table">
+                <thead>
+                    <tr>
+                        <th id="date-time-header">Date of Consultation</th>
+                        <th id="encounter-summary-header">Royal Physician's Notes</th>
+                    </tr>
+                </thead>
+                <tbody id="record-entries">
+                    {% if record.entries %}
+                        {% for entry in record.entries %}
+                            {% for date, summary in entry.items() %}
+                            <tr>
+                                <td class="date-cell">{{ date }}</td>
+                                <td class="summary-cell">{{ summary | map('trim', '- ') | map('remove_trailing_punctuation') | join('. ') }}.</td>
+                            </tr>
+                            {% endfor %}
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="2" class="no-entries">No royal consultations recorded in the annals.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="scroll-footer">
+            <p>Sealed by royal decree of Here Ye Health</p>
+            <div class="wax-seal"></div>
+        </div>
+    </div>
+    
+    <div id="loading-screen" class="medieval-loading-screen">
+        <div class="hourglass"></div>
+        <p id="loading-text">Retrieving from the Royal Archives...</p>
+    </div>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
