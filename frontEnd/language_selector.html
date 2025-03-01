@@ -2,29 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Choose Thy Tongue - Here Ye Health</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body class="medieval-theme">
-    <div class="language-parchment">
-        <!-- Logo Image -->
+    <!-- Accessibility skip link -->
+    <a href="#main-content" class="skip-to-content">Skip to main content</a>
+    
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="medieval-loading-screen">
+        <div class="hourglass"></div>
+        <p id="loading-text">The Royal Scribe prepares thy parchment...</p>
+    </div>
+
+    <div class="language-parchment" id="main-content">
+        <!-- Logo Image with alt text for screen readers -->
         <div class="medieval-logo-container">
-            <img src="{{ url_for('static', filename='images/henhealth.png') }}" alt="Here Ye Health" class="medieval-logo">
+            <img src="{{ url_for('static', filename='images/henhealth.png') }}" alt="Here Ye Health Royal Emblem" class="medieval-logo">
         </div>
         
         <h1 class="medieval-title">Choose Thy Tongue</h1>
         
         <form id="languageForm" action="{{ url_for('set_language') }}" method="post">
             <input type="hidden" name="language" id="selectedLanguage">
-            <div class="language-selection">
-                <button type="button" class="language-scroll-button" data-lang="en">English</button>
-                <button type="button" class="language-scroll-button" data-lang="de">Deutsch (German)</button>
-                <button type="button" class="language-scroll-button" data-lang="fr">Français (French)</button>
-                <button type="button" class="language-scroll-button" data-lang="es">Español (Spanish)</button>
-                <button type="button" class="language-scroll-button" data-lang="pt">Português (Portuguese)</button>
-                <button type="button" class="language-scroll-button" data-lang="it">Italiano (Italian)</button>
+            
+            <!-- Language options with accessible icons and names -->
+            <div class="language-selection" role="radiogroup" aria-labelledby="language-selection-label">
+                <h2 id="language-selection-label" class="sr-only">Select your preferred language</h2>
+                
+                <button type="button" class="language-scroll-button" data-lang="en" aria-label="English">
+                    <span aria-hidden="true">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span> English
+                </button>
+                
+                <button type="button" class="language-scroll-button" data-lang="de" aria-label="German">
+                    <span aria-hidden="true">🏰</span> Deutsch
+                </button>
+                
+                <button type="button" class="language-scroll-button" data-lang="fr" aria-label="French">
+                    <span aria-hidden="true">⚜️</span> Français
+                </button>
+                
+                <button type="button" class="language-scroll-button" data-lang="es" aria-label="Spanish">
+                    <span aria-hidden="true">🏰</span> Español
+                </button>
+                
+                <button type="button" class="language-scroll-button" data-lang="pt" aria-label="Portuguese">
+                    <span aria-hidden="true">🏰</span> Português
+                </button>
+                
+                <button type="button" class="language-scroll-button" data-lang="it" aria-label="Italian">
+                    <span aria-hidden="true">🏰</span> Italiano
+                </button>
             </div>
         </form>
+        
+        <!-- Audio button for non-readers -->
+        <div class="audio-assistance">
+            <button id="playAudioBtn" class="tts-button" aria-label="Hear instructions read aloud"></button>
+            <span class="audio-help">Touch here to hear instructions</span>
+        </div>
         
         <div class="medieval-footer">
             <p>By Royal Decree of Here Ye Health</p>
@@ -32,11 +69,32 @@
     </div>
     
     <script>
+        // Listen for language selection
         document.querySelectorAll('.language-scroll-button').forEach(button => {
             button.addEventListener('click', function() {
                 document.getElementById('selectedLanguage').value = this.getAttribute('data-lang');
+                showLoadingScreen();
                 document.getElementById('languageForm').submit();
             });
+        });
+        
+        // Audio assistance
+        document.getElementById('playAudioBtn').addEventListener('click', function() {
+            // In a real implementation, this would trigger audio playback
+            // Example: new Audio('/static/audio/instructions.mp3').play();
+            alert('In a real implementation, this would play audio instructions in multiple languages.');
+        });
+        
+        // Loading screen function
+        function showLoadingScreen() {
+            document.getElementById('loading-screen').style.display = 'flex';
+        }
+        
+        // Keyboard accessibility
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && document.activeElement.classList.contains('language-scroll-button')) {
+                document.activeElement.click();
+            }
         });
     </script>
 </body>
