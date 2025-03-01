@@ -3,33 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Language - Medical Records</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Website Front Page</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="language-container">
-        <!-- Logo Image -->
-        <picture>
-            <source srcset="{{ url_for('static', filename='images/jhu_med.webp') }}" type="image/webp">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Company Logo" class="logo">
-        </picture>
-
-        <h1>Select Your Language</h1>
-        
-        <form id="languageForm" action="{{ url_for('set_language') }}" method="post">
-            <input type="hidden" name="language" id="selectedLanguage">
-            <div class="language-selection">
-                <button type="button" class="language-button" data-lang="en">English</button>
-                <button type="button" class="language-button" data-lang="es">Español (Spanish)</button>
-                <button type="button" class="language-button" data-lang="fr">Français (French)</button>
-                <button type="button" class="language-button" data-lang="de">Deutsch (German)</button>
-                <button type="button" class="language-button" data-lang="pt">Português (Portuguese)</button>
-                <button type="button" class="language-button" data-lang="it">Italiano (Italian)</button>
-            </div>
-        </form>
+    <nav>
+        <ul>
+            <li><a href="#home">Home</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+    <header>
+        <h1>Here Ye Health</h1>
+        <p>Your  is our priority.</p>
+    </header>
+    <div class="form-container">
+        <div class="dropdown">
+            <label for="languages">Choose a language:</label>
+            <select id="languages" name="languages">
+                <option value="english">English</option>
+                <option value="spanish">Spanish</option>
+                <option value="french">French</option>
+                <option value="portuguese">Portuguese</option>
+                <option value="german">German</option>
+                <option value="italian">Italian</option>
+            </select>
+        </div>
+        <div class="phone-input">
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" name="phone">
+        </div>
     </div>
-
-    <!-- Include script.js at the end of the body -->
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <div class="name-container">
+        <div class="first-name">
+            <label for="first-name">First Name:</label>
+            <input type="text" id="first-name" name="first-name">
+        </div>
+        <div class="last-name">
+            <label for="last-name">Last Name:</label>
+            <input type="text" id="last-name" name="last-name">
+        </div>
+    </div>
 </body>
 </html>
