@@ -1,0 +1,78 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #e0f7fa; /* Light Blue Background */
+}
+
+nav {
+    background-color: #003366; /* Dark Blue Background */
+    overflow: hidden;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    float: left;
+}
+
+nav ul li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+nav ul li a:hover {
+    background-color: #FFD700; /* Gold Background on Hover */
+}
+
+header {
+    padding: 60px;
+    text-align: center;
+    background: #003366; /* Dark Blue Background */
+    color: white; /* White Text */
+}
+
+header h1 {
+    font-size: 50px;
+}
+
+header p {
+    font-size: 20px;
+}
+
+.form-container, .name-container {
+    display: flex;
+    justify-content: center;
+    margin: 20px;
+}
+
+.form-container div, .name-container div {
+    margin: 0 10px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #003366; /* Dark Blue Text */
+}
+
+input[type="text"], input[type="tel"], select {
+    width: 200px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #003366; /* Dark Blue Border */
+    border-radius: 4px;
+    background-color: #f1f1f1; /* Light Background */
+}
+
+input[type="text"]:focus, input[type="tel"]:focus, select:focus {
+    border-color: #FFD700; /* Gold Border on Focus */
+    outline: none;
+}
