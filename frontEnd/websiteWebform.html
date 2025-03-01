@@ -1,80 +1,362 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ session.get('language', 'en') }}">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Scroll - Here Ye Health</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body class="medieval-theme">
+    <!-- Accessibility skip link -->
+    <a href="#patient-webform" class="skip-to-content">Skip to form</a>
+    
     <!-- Back Button -->
     <button onclick="window.history.back()" class="medieval-back-button">Return to Thy Kingdom</button>
+    
+    <!-- Accessibility controls -->
+    <div class="accessibility-toolbar">
+        <button id="toggle-audio-narration" class="tts-button" aria-label="Toggle form narration"></button>
+        <button id="toggle-large-text" class="medieval-button">Larger Text</button>
+        <button id="toggle-simple-mode" class="medieval-button">Simplified View</button>
+    </div>
     
     <div class="parchment-form-container">
         <div class="medieval-scroll-header">
             <img src="{{ url_for('static', filename='images/henhealth.png') }}" alt="Here Ye Health" class="small-logo">
             <h2 class="medieval-subtitle">Record of Ailments and Person</h2>
+            
+            <!-- Audio instructions for non-readers -->
+            <button id="hear-instructions" class="tts-button has-audio" aria-label="Hear form instructions"></button>
         </div>
         
         <form id="patient-webform" action="{{ url_for('submit_webform') }}" method="POST" onsubmit="showLoadingScreen()" class="medieval-form">
-            <div class="form-section">
-                <label for="first_name">Given Name:</label>
-                <input type="text" id="first_name" name="first_name" required>
+            <!-- Personal Information Section -->
+            <fieldset>
+                <legend class="medieval-scroll-title">Thy Personal Details</legend>
+                
+                <div class="form-section">
+                    <label for="first_name">
+                        <span class="field-icon">👤</span> Given Name:
+                    </label>
+                    <input type="text" id="first_name" name="first_name" required 
+                           aria-describedby="first-name-help">
+                    <span id="first-name-help" class="form-help">Thy first name, bestowed upon thee at birth</span>
+                </div>
+                
+                <div class="form-section">
+                    <label for="last_name">
+                        <span class="field-icon">👪</span> Family Name:
+                    </label>
+                    <input type="text" id="last_name" name="last_name" required
+                           aria-describedby="last-name-help">
+                    <span id="last-name-help" class="form-help">Thy surname or family lineage name</span>
+                </div>
+                
+                <div class="form-section">
+                    <label for="phone_number">
+                        <span class="field-icon">📜</span> Scroll Number:
+                    </label>
+                    <input type="tel" id="phone_number" name="phone_number" required 
+                           pattern="[+][0-9]{11,14}" placeholder="+1234567890"
+                           aria-describedby="phone-help">
+                    <span id="phone-help" class="form-help">For royal messengers to reach thee (start with +)</span>
+                </div>
+            </fieldset>
+            
+            <!-- Physical Attributes Section -->
+            <fieldset>
+                <legend class="medieval-scroll-title">Thy Physical Being</legend>
+                
+                <div class="form-section">
+                    <label for="dob">
+                        <span class="field-icon">🕰️</span> Day of Birth:
+                    </label>
+                    <input type="date" id="dob" name="dob" required
+                           aria-describedby="dob-help">
+                    <span id="dob-help" class="form-help">When thou came into this realm</span>
+                </div>
+                
+                <div class="form-section">
+                    <label for="gender">
+                        <span class="field-icon">⚧️</span> Gender:
+                    </label>
+                    <select id="gender" name="gender" required class="medieval-select"
+                            aria-describedby="gender-help">
+                        <option value="">Select thy gender...</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <span id="gender-help" class="form-help">How thou identifies in being</span>
+                </div>
+                
+                <div class="form-section">
+                    <label for="height">
+                        <span class="field-icon">📏</span> Height (in centimeters):
+                    </label>
+                    <input type="number" id="height" name="height" min="30" max="250" required
+                           aria-describedby="height-help">
+                    <span id="height-help" class="form-help">As measured by royal yardstick</span>
+                </div>
+                
+                <div class="form-section">
+                    <label for="weight">
+                        <span class="field-icon">⚖️</span> Weight (in kilograms):
+                    </label>
+                    <input type="number" id="weight" name="weight" min="1" max="300" required
+                           aria-describedby="weight-help">
+                    <span id="weight-help" class="form-help">As measured by royal scales</span>
+                </div>
+            </fieldset>
+            
+            <!-- Ailments Section -->
+            <fieldset>
+                <legend class="medieval-scroll-title">Thy Ailments and Symptoms</legend>
+                
+                <!-- Visual symptom selector for non-readers -->
+                <div class="visual-symptoms-selector">
+                    <p class="symptom-instruction">Select thy ailments below (optional):</p>
+                    
+                    <div class="symptom-icons">
+                        <div class="symptom-icon">
+                            <input type="checkbox" id="fever-symptom" name="symptoms[]" value="fever" class="medieval-checkbox">
+                            <label for="fever-symptom" class="symptom-label">
+                                <span class="icon-ailment icon-fever"></span>
+                                <span class="symptom-name">Fever</span>
+                            </label>
+                        </div>
+                        
+                        <div class="symptom-icon">
+                            <input type="checkbox" id="cough-symptom" name="symptoms[]" value="cough" class="medieval-checkbox">
+                            <label for="cough-symptom" class="symptom-label">
+                                <span class="icon-ailment icon-cough"></span>
+                                <span class="symptom-name">Cough</span>
+                            </label>
+                        </div>
+                        
+                        <div class="symptom-icon">
+                            <input type="checkbox" id="breath-symptom" name="symptoms[]" value="shortness_of_breath" class="medieval-checkbox">
+                            <label for="breath-symptom" class="symptom-label">
+                                <span class="icon-ailment icon-breath"></span>
+                                <span class="symptom-name">Short of Breath</span>
+                            </label>
+                        </div>
+                        
+                        <div class="symptom-icon">
+                            <input type="checkbox" id="fatigue-symptom" name="symptoms[]" value="fatigue" class="medieval-checkbox">
+                            <label for="fatigue-symptom" class="symptom-label">
+                                <span class="icon-ailment icon-fatigue"></span>
+                                <span class="symptom-name">Fatigue</span>
+                            </label>
+                        </div>
+                        
+                        <div class="symptom-icon">
+                            <input type="checkbox" id="headache-symptom" name="symptoms[]" value="headache" class="medieval-checkbox">
+                            <label for="headache-symptom" class="symptom-label">
+                                <span class="icon-ailment icon-headache"></span>
+                                <span class="symptom-name">Head Pain</span>
+                            </label>
+                        </div>
+                        
+                        <div class="symptom-icon">
+                            <input type="checkbox" id="stomach-symptom" name="symptoms[]" value="stomach_pain" class="medieval-checkbox">
+                            <label for="stomach-symptom" class="symptom-label">
+                                <span class="icon-ailment icon-stomach"></span>
+                                <span class="symptom-name">Stomach Pain</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <label for="reason">
+                        <span class="field-icon">📝</span> Describe Thy Ailments:
+                    </label>
+                    <textarea id="reason" name="reason" required rows="5" class="medieval-textarea"
+                              aria-describedby="reason-help" placeholder="Describe how thou art feeling unwell..."></textarea>
+                    <span id="reason-help" class="form-help">Be detailed in thy suffering</span>
+                </div>
+                
+                <!-- The four humors assessment (medieval medical context) -->
+                <div class="humors-assessment">
+                    <h3 class="medieval-scroll-title">Assessment of Thy Humors</h3>
+                    <p class="form-help">The Royal Physician seeks to understand which of thy humors may be imbalanced</p>
+                    
+                    <div class="medieval-radio-group" role="radiogroup" aria-labelledby="humors-title">
+                        <span id="humors-title" class="sr-only">Select thy most imbalanced humor:</span>
+                        
+                        <div class="humor-option">
+                            <input type="radio" id="blood-humor" name="humor" value="blood" class="medieval-radio">
+                            <label for="blood-humor" class="medieval-radio-label">
+                                <span class="icon-ailment icon-blood"></span>
+                                <span class="humor-name">Blood</span>
+                                <span class="humor-traits">(Warm & Moist)</span>
+                            </label>
+                        </div>
+                        
+                        <div class="humor-option">
+                            <input type="radio" id="phlegm-humor" name="humor" value="phlegm" class="medieval-radio">
+                            <label for="phlegm-humor" class="medieval-radio-label">
+                                <span class="icon-ailment icon-phlegm"></span>
+                                <span class="humor-name">Phlegm</span>
+                                <span class="humor-traits">(Cold & Moist)</span>
+                            </label>
+                        </div>
+                        
+                        <div class="humor-option">
+                            <input type="radio" id="yellow-bile-humor" name="humor" value="yellow_bile" class="medieval-radio">
+                            <label for="yellow-bile-humor" class="medieval-radio-label">
+                                <span class="icon-ailment icon-yellow-bile"></span>
+                                <span class="humor-name">Yellow Bile</span>
+                                <span class="humor-traits">(Warm & Dry)</span>
+                            </label>
+                        </div>
+                        
+                        <div class="humor-option">
+                            <input type="radio" id="black-bile-humor" name="humor" value="black_bile" class="medieval-radio">
+                            <label for="black-bile-humor" class="medieval-radio-label">
+                                <span class="icon-ailment icon-black-bile"></span>
+                                <span class="humor-name">Black Bile</span>
+                                <span class="humor-traits">(Cold & Dry)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+            
+            <!-- Terms Agreement with Medieval Wording -->
+            <div class="terms-agreement">
+                <input type="checkbox" id="terms" name="terms" required class="medieval-checkbox">
+                <label for="terms" class="medieval-checkbox-label">
+                    I hereby pledge my honor that the information provided is true to the best of my knowledge, 
+                    and I grant permission to the Royal Physicians to examine my condition
+                </label>
             </div>
             
             <div class="form-section">
-                <label for="last_name">Family Name:</label>
-                <input type="text" id="last_name" name="last_name" required>
+                <button type="submit" class="medieval-submit-button">
+                    <span class="button-icon">📜</span> 
+                    Send Thy Scroll to the Royal Physician
+                </button>
             </div>
             
-            <div class="form-section">
-                <label for="phone_number">Scroll Number:</label>
-                <input type="tel" id="phone_number" name="phone_number" required pattern="[+][0-9]{11,14}" placeholder="+1234567890">
-                <span class="form-help">For royal messengers to reach thee</span>
-            </div>
-            
-            <div class="form-section">
-                <label for="dob">Day of Birth:</label>
-                <input type="date" id="dob" name="dob" required>
-            </div>
-            
-            <div class="form-section">
-                <label for="gender">Gender:</label>
-                <select id="gender" name="gender" required class="medieval-select">
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="other">Other</option>
-                </select>
-            </div>
-            
-            <div class="form-section">
-                <label for="height">Height (in centimeters):</label>
-                <input type="number" id="height" name="height" required>
-                <span class="form-help">As measured by royal yardstick</span>
-            </div>
-            
-            <div class="form-section">
-                <label for="weight">Weight (in kilograms):</label>
-                <input type="number" id="weight" name="weight" required>
-                <span class="form-help">As measured by royal scales</span>
-            </div>
-            
-            <div class="form-section">
-                <label for="reason">Describe Thy Ailments:</label>
-                <textarea id="reason" name="reason" required rows="5" class="medieval-textarea"></textarea>
-                <span class="form-help">Be detailed in thy suffering</span>
-            </div>
-            
-            <div class="form-section">
-                <button type="submit" class="medieval-submit-button">Send Thy Scroll to the Royal Physician</button>
+            <!-- Alternative Button for Non-Readers -->
+            <div class="audio-submit">
+                <button type="submit" class="wax-seal-button" aria-label="Submit form">
+                    <span class="sr-only">Send to Royal Physician</span>
+                </button>
+                <p class="form-help">Press the royal seal to submit</p>
             </div>
         </form>
     </div>
     
+    <!-- Loading Screen -->
     <div id="loading-screen" class="medieval-loading-screen">
         <div class="hourglass"></div>
         <p id="loading-text">Delivering Thy Scroll...</p>
     </div>
     
-    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        // Toggle accessibility features
+        document.getElementById('toggle-large-text').addEventListener('click', function() {
+            document.body.classList.toggle('large-text-mode');
+        });
+        
+        document.getElementById('toggle-simple-mode').addEventListener('click', function() {
+            document.body.classList.toggle('simplified-mode');
+        });
+        
+        // Audio narration toggle
+        document.getElementById('toggle-audio-narration').addEventListener('click', function() {
+            // This would implement text-to-speech narration in a real app
+            alert('This would toggle audio narration of form elements');
+        });
+        
+        // Form instructions audio
+        document.getElementById('hear-instructions').addEventListener('click', function() {
+            // This would play audio instructions in a real app
+            alert('This would play audio instructions for filling out the form');
+        });
+        
+        // Show loading screen on form submission
+        function showLoadingScreen() {
+            document.getElementById('loading-screen').style.display = 'flex';
+            return true;
+        }
+        
+        // Validate phone number format
+        document.getElementById('phone_number').addEventListener('input', function() {
+            let input = this.value;
+            
+            // Ensure it starts with '+'
+            if (input.length > 0 && !input.startsWith('+')) {
+                input = '+' + input;
+            }
+            
+            // Remove any non-numeric characters after the '+'
+            if (input.startsWith('+')) {
+                const plus = input.charAt(0);
+                const numbers = input.substring(1).replace(/[^0-9]/g, '');
+                input = plus + numbers;
+            }
+            
+            this.value = input;
+        });
+        
+        // Add visual feedback when selecting symptoms
+        const symptomIcons = document.querySelectorAll('.symptom-icon');
+        symptomIcons.forEach(icon => {
+            const checkbox = icon.querySelector('input[type="checkbox"]');
+            const label = icon.querySelector('.symptom-label');
+            
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    label.classList.add('selected');
+                } else {
+                    label.classList.remove('selected');
+                }
+            });
+        });
+        
+        // Form validation
+        document.getElementById('patient-webform').addEventListener('submit', function(event) {
+            const requiredFields = this.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('error');
+                    
+                    // Add error message if not already present
+                    const fieldParent = field.parentElement;
+                    if (!fieldParent.querySelector('.error-message')) {
+                        const errorMsg = document.createElement('span');
+                        errorMsg.className = 'error-message';
+                        errorMsg.textContent = 'This field requires thy attention';
+                        fieldParent.appendChild(errorMsg);
+                    }
+                } else {
+                    field.classList.remove('error');
+                    const errorMsg = field.parentElement.querySelector('.error-message');
+                    if (errorMsg) {
+                        errorMsg.remove();
+                    }
+                }
+            });
+            
+            if (!isValid) {
+                event.preventDefault();
+                // Scroll to first error
+                const firstError = this.querySelector('.error');
+                if (firstError) {
+                    firstError.focus();
+                }
+                return false;
+            }
+            
+            return showLoadingScreen();
+        });
+    </script>
 </body>
 </html>

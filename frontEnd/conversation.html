@@ -1,39 +1,157 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ session.get('language', 'en') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Royal Messages - Here Ye Health</title>
+    <title>Royal Consultation - Here Ye Health</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body class="medieval-theme">
+    <!-- Accessibility skip link -->
+    <a href="#conversation" class="skip-to-content">Skip to conversation</a>
+    
+    <!-- Back Button -->
+    <button id="back-button" class="medieval-back-button">Return to Castle</button>
+    
     <div class="parchment-container">
         <div class="parchment-header">
             <img src="{{ url_for('static', filename='images/henhealth.png') }}" alt="Here Ye Health" class="small-logo">
-            <h1 class="medieval-title">Royal Messages in Progress</h1>
+            <h1 class="medieval-title">Royal Consultation</h1>
         </div>
         
+        <!-- Accessibility controls -->
+        <div class="accessibility-controls">
+            <button id="toggle-audio" class="tts-button" aria-label="Toggle audio narration"></button>
+            <button id="toggle-large-text" class="medieval-button">Larger Text</button>
+            <button id="toggle-high-contrast" class="medieval-button">High Contrast</button>
+        </div>
+        
+        <!-- Scroll details with visual iconography -->
         <div class="scroll-details">
-            <p>Sending royal messages to: <span id="to-number" class="highlight-text">{{ to_number }}</span></p>
+            <p>
+                <span class="icon-with-label">
+                    <span class="icon-ailment icon-healer" aria-hidden="true"></span>
+                    <span class="icon-label">Consulting with Royal Physician</span>
+                </span>
+            </p>
+            <p>Scroll Number: <span id="to-number" class="highlight-text">{{ to_number }}</span></p>
             <p>Royal Scroll ID: <span id="message-sid" class="highlight-text">{{ message_sid }}</span></p>
         </div>
         
-        <div id="conversation" class="parchment-conversation"></div>
+        <!-- Common Symptoms Icons for non-readers -->
+        <div class="common-symptoms">
+            <h2 class="medieval-subtitle">Common Ailments</h2>
+            <div class="ailment-icons">
+                <button class="ailment-button" aria-label="I have fever" data-ailment="fever">
+                    <span class="icon-ailment icon-fever"></span>
+                    <span class="ailment-name">Fever</span>
+                </button>
+                
+                <button class="ailment-button" aria-label="I have cough" data-ailment="cough">
+                    <span class="icon-ailment icon-cough"></span>
+                    <span class="ailment-name">Cough</span>
+                </button>
+                
+                <button class="ailment-button" aria-label="I have shortness of breath" data-ailment="breath">
+                    <span class="icon-ailment icon-breath"></span>
+                    <span class="ailment-name">Short of Breath</span>
+                </button>
+                
+                <button class="ailment-button" aria-label="I feel fatigue" data-ailment="fatigue">
+                    <span class="icon-ailment icon-fatigue"></span>
+                    <span class="ailment-name">Fatigue</span>
+                </button>
+                
+                <button class="ailment-button" aria-label="I have headache" data-ailment="headache">
+                    <span class="icon-ailment icon-headache"></span>
+                    <span class="ailment-name">Head Pain</span>
+                </button>
+                
+                <button class="ailment-button" aria-label="I have stomach pain" data-ailment="stomach">
+                    <span class="icon-ailment icon-stomach"></span>
+                    <span class="ailment-name">Stomach Pain</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Conversation area -->
+        <div id="conversation" class="parchment-conversation" aria-live="polite"></div>
+        
+        <!-- Input area with accessibility features -->
+        <div class="conversation-input">
+            <input type="text" id="user-message" class="message-input" 
+                   placeholder="Write thy message here..." 
+                   aria-label="Your message to the Royal Physician">
+            <button id="send-message" class="medieval-button">Send</button>
+        </div>
+        
+        <!-- Alternative response options for low literacy -->
+        <div class="response-options">
+            <button class="medieval-button yes-button">Yes</button>
+            <button class="medieval-button no-button">No</button>
+            <button class="medieval-button unsure-button">Not Sure</button>
+        </div>
+    </div>
+    
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="medieval-loading-screen">
+        <div class="hourglass"></div>
+        <p id="loading-text">The Royal Physician contemplates thy condition...</p>
     </div>
     
     <script>
         const messageSid = '{{ message_sid }}';
+        const toNumber = '{{ to_number }}';
         const conversation = document.getElementById('conversation');
+        const userMessage = document.getElementById('user-message');
+        const sendButton = document.getElementById('send-message');
+        const backButton = document.getElementById('back-button');
         const eventSource = new EventSource(`/stream/${messageSid}`);
+        const loadingScreen = document.getElementById('loading-screen');
         
+        // Toggle buttons for accessibility
+        const toggleAudio = document.getElementById('toggle-audio');
+        const toggleLargeText = document.getElementById('toggle-large-text');
+        const toggleHighContrast = document.getElementById('toggle-high-contrast');
+        
+        // Quick response buttons
+        const yesButton = document.querySelector('.yes-button');
+        const noButton = document.querySelector('.no-button');
+        const unsureButton = document.querySelector('.unsure-button');
+        const ailmentButtons = document.querySelectorAll('.ailment-button');
+        
+        // Accessibility toggle functions
+        toggleLargeText.addEventListener('click', function() {
+            document.body.classList.toggle('large-text-mode');
+        });
+        
+        toggleHighContrast.addEventListener('click', function() {
+            document.body.classList.toggle('high-contrast-mode');
+        });
+        
+        toggleAudio.addEventListener('click', function() {
+            // Toggle audio narration (would implement text-to-speech)
+            alert('Audio narration would toggle here');
+        });
+        
+        // Event source for real-time updates
         eventSource.onmessage = function(event) {
-            console.log(event.data);
             const message = JSON.parse(event.data);
             const messageDiv = document.createElement('div');
             
             if (message.speaker === 'ai') {
                 messageDiv.className = 'message ai';
                 messageDiv.innerHTML = `<strong class="royal-text">Royal Physician:</strong> ${message.text}`;
+                
+                // Add text-to-speech button for each message
+                const ttsButton = document.createElement('button');
+                ttsButton.className = 'tts-button';
+                ttsButton.setAttribute('aria-label', 'Read this message aloud');
+                ttsButton.onclick = function() {
+                    // In real implementation, trigger text-to-speech here
+                    alert('This would read: ' + message.text);
+                };
+                messageDiv.appendChild(ttsButton);
             } else {
                 messageDiv.className = 'message user';
                 messageDiv.innerHTML = `<strong class="peasant-text">Patient:</strong> ${message.text}`;
@@ -41,12 +159,121 @@
             
             conversation.appendChild(messageDiv);
             conversation.scrollTop = conversation.scrollHeight;
+            
+            // Check for completion message
+            if (message.type === 'call_status' && message.status === 'completed') {
+                if (message.medical_record_url) {
+                    window.location.href = message.medical_record_url;
+                }
+            }
         };
         
         eventSource.onerror = function(error) {
             console.error('EventSource failed:', error);
             eventSource.close();
         };
+        
+        // Send message function
+        function sendMessage(text) {
+            if (!text.trim()) return;
+            
+            showLoadingScreen();
+            
+            fetch('/reply', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    sid: messageSid,
+                    message: text
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                userMessage.value = '';
+                hideLoadingScreen();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                hideLoadingScreen();
+            });
+        }
+        
+        // Event listeners
+        sendButton.addEventListener('click', function() {
+            sendMessage(userMessage.value);
+        });
+        
+        userMessage.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage(userMessage.value);
+            }
+        });
+        
+        backButton.addEventListener('click', function() {
+            window.history.back();
+        });
+        
+        // Quick response buttons
+        yesButton.addEventListener('click', function() {
+            sendMessage('Yes');
+        });
+        
+        noButton.addEventListener('click', function() {
+            sendMessage('No');
+        });
+        
+        unsureButton.addEventListener('click', function() {
+            sendMessage('I am not sure');
+        });
+        
+        // Symptom icon buttons
+        ailmentButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const ailment = this.getAttribute('data-ailment');
+                let ailmentText = '';
+                
+                switch(ailment) {
+                    case 'fever':
+                        ailmentText = 'I have a fever';
+                        break;
+                    case 'cough':
+                        ailmentText = 'I have a cough';
+                        break;
+                    case 'breath':
+                        ailmentText = 'I am short of breath';
+                        break;
+                    case 'fatigue':
+                        ailmentText = 'I feel fatigued';
+                        break;
+                    case 'headache':
+                        ailmentText = 'I have a headache';
+                        break;
+                    case 'stomach':
+                        ailmentText = 'I have stomach pain';
+                        break;
+                    default:
+                        ailmentText = 'I am feeling unwell';
+                }
+                
+                sendMessage(ailmentText);
+            });
+        });
+        
+        // Loading screen functions
+        function showLoadingScreen() {
+            loadingScreen.style.display = 'flex';
+        }
+        
+        function hideLoadingScreen() {
+            loadingScreen.style.display = 'none';
+        }
+        
+        // Hide loading screen on page load
+        window.addEventListener('load', function() {
+            hideLoadingScreen();
+        });
     </script>
 </body>
 </html>
