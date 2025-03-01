@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Language - Medical Records</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="language-container">
+        <!-- Logo Image -->
+        <picture>
+            <source srcset="{{ url_for('static', filename='images/jhu_med.webp') }}" type="image/webp">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Company Logo" class="logo">
+        </picture>
+
+        <h1>Select Your Language</h1>
+        
+        <form id="languageForm" action="{{ url_for('set_language') }}" method="post">
+            <input type="hidden" name="language" id="selectedLanguage">
+            <div class="language-selection">
+                <button type="button" class="language-button" data-lang="en">English</button>
+                <button type="button" class="language-button" data-lang="es">Español (Spanish)</button>
+                <button type="button" class="language-button" data-lang="fr">Français (French)</button>
+                <button type="button" class="language-button" data-lang="de">Deutsch (German)</button>
+                <button type="button" class="language-button" data-lang="pt">Português (Portuguese)</button>
+                <button type="button" class="language-button" data-lang="it">Italiano (Italian)</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Include script.js at the end of the body -->
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
