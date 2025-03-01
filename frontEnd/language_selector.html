@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Choose Thy Tongue - Here Ye Health</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="medieval-theme">
+    <div class="language-parchment">
+        <!-- Logo Image -->
+        <div class="medieval-logo-container">
+            <img src="{{ url_for('static', filename='images/henhealth.png') }}" alt="Here Ye Health" class="medieval-logo">
+        </div>
+        
+        <h1 class="medieval-title">Choose Thy Tongue</h1>
+        
+        <form id="languageForm" action="{{ url_for('set_language') }}" method="post">
+            <input type="hidden" name="language" id="selectedLanguage">
+            <div class="language-selection">
+                <button type="button" class="language-scroll-button" data-lang="en">English</button>
+                <button type="button" class="language-scroll-button" data-lang="de">Deutsch (German)</button>
+                <button type="button" class="language-scroll-button" data-lang="fr">Français (French)</button>
+                <button type="button" class="language-scroll-button" data-lang="es">Español (Spanish)</button>
+                <button type="button" class="language-scroll-button" data-lang="pt">Português (Portuguese)</button>
+                <button type="button" class="language-scroll-button" data-lang="it">Italiano (Italian)</button>
+            </div>
+        </form>
+        
+        <div class="medieval-footer">
+            <p>By Royal Decree of Here Ye Health</p>
+        </div>
+    </div>
+    
+    <script>
+        document.querySelectorAll('.language-scroll-button').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('selectedLanguage').value = this.getAttribute('data-lang');
+                document.getElementById('languageForm').submit();
+            });
+        });
+    </script>
+</body>
+</html>

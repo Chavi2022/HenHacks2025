@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Patient Scroll - Here Ye Health</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="medieval-theme">
+    <!-- Back Button -->
+    <button onclick="window.history.back()" class="medieval-back-button">Return to Thy Kingdom</button>
+    
+    <div class="parchment-form-container">
+        <div class="medieval-scroll-header">
+            <img src="{{ url_for('static', filename='images/henhealth.png') }}" alt="Here Ye Health" class="small-logo">
+            <h2 class="medieval-subtitle">Record of Ailments and Person</h2>
+        </div>
+        
+        <form id="patient-webform" action="{{ url_for('submit_webform') }}" method="POST" onsubmit="showLoadingScreen()" class="medieval-form">
+            <div class="form-section">
+                <label for="first_name">Given Name:</label>
+                <input type="text" id="first_name" name="first_name" required>
+            </div>
+            
+            <div class="form-section">
+                <label for="last_name">Family Name:</label>
+                <input type="text" id="last_name" name="last_name" required>
+            </div>
+            
+            <div class="form-section">
+                <label for="phone_number">Scroll Number:</label>
+                <input type="tel" id="phone_number" name="phone_number" required pattern="[+][0-9]{11,14}" placeholder="+1234567890">
+                <span class="form-help">For royal messengers to reach thee</span>
+            </div>
+            
+            <div class="form-section">
+                <label for="dob">Day of Birth:</label>
+                <input type="date" id="dob" name="dob" required>
+            </div>
+            
+            <div class="form-section">
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" required class="medieval-select">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            
+            <div class="form-section">
+                <label for="height">Height (in centimeters):</label>
+                <input type="number" id="height" name="height" required>
+                <span class="form-help">As measured by royal yardstick</span>
+            </div>
+            
+            <div class="form-section">
+                <label for="weight">Weight (in kilograms):</label>
+                <input type="number" id="weight" name="weight" required>
+                <span class="form-help">As measured by royal scales</span>
+            </div>
+            
+            <div class="form-section">
+                <label for="reason">Describe Thy Ailments:</label>
+                <textarea id="reason" name="reason" required rows="5" class="medieval-textarea"></textarea>
+                <span class="form-help">Be detailed in thy suffering</span>
+            </div>
+            
+            <div class="form-section">
+                <button type="submit" class="medieval-submit-button">Send Thy Scroll to the Royal Physician</button>
+            </div>
+        </form>
+    </div>
+    
+    <div id="loading-screen" class="medieval-loading-screen">
+        <div class="hourglass"></div>
+        <p id="loading-text">Delivering Thy Scroll...</p>
+    </div>
+    
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

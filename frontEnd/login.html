@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Royal Chambers - Here Ye Health</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="medieval-theme">
+    <!-- Back Button -->
+    <button id="language-back-button" class="medieval-back-button">Return</button>
+    
+    <!-- Main Container for Healer and Patient Views -->
+    <div class="castle-container">
+        <!-- Healer View Section -->
+        <div class="castle-left-wing">
+            <h2 id="doctor-heading" class="medieval-subtitle">Royal Physician Portal</h2>
+            
+            <!-- Login Form -->
+            <div class="scroll-section">
+                <h3 id="login-heading" class="medieval-scroll-title">Enter Thy Credentials</h3>
+                <form id="login-form" onsubmit="showLoadingScreen()">
+                    <label for="username" id="username-label">Patient's Scroll Number:</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter thy scroll number" autocomplete="off">
+                    
+                    <label for="password" id="password-label">Secret Word:</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter thy secret word" autocomplete="off">
+                    
+                    <button type="submit" id="login-button" class="medieval-button">Access Records</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Patient View Section -->
+        <div class="castle-right-wing">
+            <h2 id="patient-heading" class="medieval-subtitle">Commoner's Portal</h2>
+            
+            <!-- Phone Number Validation Form -->
+            <div class="scroll-section">
+                <h3 id="call-heading" class="medieval-scroll-title">Summon the Royal Physician</h3>
+                <form method="post" onsubmit="return validatePhoneNumber() && showLoadingScreen()">
+                    <label for="to_number">Thy Scroll Number:</label>
+                    <input type="text" name="to_number" id="to_number" placeholder="+1234567890" required>
+                    <input type="submit" value="Summon Physician" class="medieval-button">
+                </form>
+            </div>
+            
+            <!-- Link to Webform -->
+            <div class="scroll-section">
+                <a href="{{ url_for('webform') }}" id="webform-link" onclick="showLoadingScreen()" class="medieval-link">Inscribe Thy Ailments</a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="medieval-loading-screen">
+        <div class="hourglass"></div>
+        <p id="loading-text">The Royal Physician Approaches...</p>
+    </div>
+    
+    <script>
+        function validatePhoneNumber() {
+            var phoneNumber = document.getElementById('to_number').value;
+            var regex = /^\+?\d{10,15}$/;
+            if (!regex.test(phoneNumber)) {
+                alert("Thy scroll number appears invalid. Please use the proper format.");
+                return false;
+            }
+            return true;
+        }
+        
+        function showLoadingScreen() {
+            document.getElementById('loading-screen').style.display = 'flex';
+        }
+    </script>
+    <script src="{{ url_for('static', filename='medeival.js') }}"></script>
+</body>
+</html>

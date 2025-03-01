@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Royal Messages - Here Ye Health</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body class="medieval-theme">
+    <div class="parchment-container">
+        <div class="parchment-header">
+            <img src="{{ url_for('static', filename='images/henhealth.png') }}" alt="Here Ye Health" class="small-logo">
+            <h1 class="medieval-title">Royal Messages in Progress</h1>
+        </div>
+        
+        <div class="scroll-details">
+            <p>Sending royal messages to: <span id="to-number" class="highlight-text">{{ to_number }}</span></p>
+            <p>Royal Scroll ID: <span id="message-sid" class="highlight-text">{{ message_sid }}</span></p>
+        </div>
+        
+        <div id="conversation" class="parchment-conversation"></div>
+    </div>
+    
+    <script>
+        const messageSid = '{{ message_sid }}';
+        const conversation = document.getElementById('conversation');
+        const eventSource = new EventSource(`/stream/${messageSid}`);
+        
+        eventSource.onmessage = function(event) {
+            console.log(event.data);
+            const message = JSON.parse(event.data);
+            const messageDiv = document.createElement('div');
+            
+            if (message.speaker === 'ai') {
+                messageDiv.className = 'message ai';
+                messageDiv.innerHTML = `<strong class="royal-text">Royal Physician:</strong> ${message.text}`;
+            } else {
+                messageDiv.className = 'message user';
+                messageDiv.innerHTML = `<strong class="peasant-text">Patient:</strong> ${message.text}`;
+            }
+            
+            conversation.appendChild(messageDiv);
+            conversation.scrollTop = conversation.scrollHeight;
+        };
+        
+        eventSource.onerror = function(error) {
+            console.error('EventSource failed:', error);
+            eventSource.close();
+        };
+    </script>
+</body>
+</html>
